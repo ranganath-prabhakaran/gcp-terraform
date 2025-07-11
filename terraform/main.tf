@@ -3,6 +3,10 @@ terraform {
   required_providers {
     google = {
       source  = "hashicorp/google"
+      version = "~> 6.43"
+    }
+    google-beta = {
+      source  = "hashicorp/google-beta"
       version = "~> 5.12"
     }
     random = {
@@ -13,6 +17,11 @@ terraform {
 }
 
 provider "google" {
+  project = var.project_id
+  region  = var.region
+}
+
+provider "google-beta" {
   project = var.project_id
   region  = var.region
 }
@@ -37,6 +46,7 @@ module "iam_secrets" {
 module "gce_mcp_server" {
   source           = "./modules/gce_mcp_server"
   project_id       = var.project_id
+  region           = var.region
   zone             = var.zone
   prefix           = var.prefix
   network_name     = module.networking.network_name

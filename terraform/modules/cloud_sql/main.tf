@@ -14,25 +14,24 @@ resource "google_sql_database_instance" "mysql_instance" {
   region           = var.region
   database_version = "MYSQL_8_0"
 
+
   settings {
     tier = "db-n1-standard-2"
     disk_size = 20
     disk_type = "PD_SSD"
+    availability_type = "ZONAL" # Explicitly set instance type
     ip_configuration {
       ipv4_enabled    = false
       private_network = var.network_id
     }
-    database_flags {
-      name  = "log_bin"
-      value = "on"
-    }
     backup_configuration {
       enabled = true
+      binary_log_enabled = true
     }
   }
 
   deletion_protection = false
-  depends_on = [google_service_networking_connection.default] # Reference from parent module's networking
+
 }
 
 resource "google_sql_database" "database" {

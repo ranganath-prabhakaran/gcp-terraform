@@ -66,7 +66,3 @@ output "dms_destination_profile_id" {
   description = "ID of the DMS destination connection profile."
 }
 
-output "dms_migration_job_id" {
-  value       = google_database_migration_service_migration_job.mysql_migration.migration_job_id
-  description = "ID of the DMS migration job."
-}

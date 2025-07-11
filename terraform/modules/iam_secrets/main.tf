@@ -14,7 +14,6 @@ resource "google_project_iam_member" "sa_roles" {
     "roles/secretmanager.secretAccessor",
     "roles/storage.objectAdmin",
     "roles/datamigration.viewer",
-    "roles/datamigration.user",
     "roles/monitoring.viewer",
     "roles/logging.logWriter"
   ])
@@ -39,13 +38,14 @@ resource "google_secret_manager_secret" "cloud_sql_password" {
   }
 }
 
-# Data sources to read the secrets for DMS profiles
-data "google_secret_manager_secret_version" "source_db_password" {
-  project = var.project_id
-  secret  = var.source_db_pass_secret_name
+# Generate a random password for the source database
+resource "random_password" "source_db_password" {
+  length  = 16
+  special = true
 }
 
-data "google_secret_manager_secret_version" "cloud_sql_password" {
-  project = var.project_id
-  secret  = var.cloud_sql_pass_secret_name
+# Create the initial version for the source database secret
+resource "google_secret_manager_secret_version" "source_db_password_version" {
+  secret      = google_secret_manager_secret.source_db_password.id
+  secret_data = random_password.source_db_password.result
 }
