@@ -1,12 +1,15 @@
 data "google_project" "project" {
 }
 
-resource "google_project_iam_member" "dms_service_agent_role" {
-  provider = google-beta
-  project  = var.project_id
-  role     = "roles/cloudsql.client"
-  member   = "serviceAccount:service-${data.google_project.project.number}@gcp-sa-dms.iam.gserviceaccount.com"
+# First, ensure the Data Migration API is enabled.
+# Google will automatically create the service account when this is done.
+resource "google_project_service" "dms_api" {
+  project                    = var.project_id
+  service                    = "datamigration.googleapis.com"
+  disable_dependent_services = false
+  disable_on_destroy         = false
 }
+
 
 resource "google_database_migration_service_connection_profile" "source" {
   provider              = google
@@ -39,5 +42,3 @@ resource "google_database_migration_service_connection_profile" "destination" {
 
   depends_on = [module.cloud_sql]
 }
-
-

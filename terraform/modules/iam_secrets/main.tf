@@ -19,6 +19,7 @@ resource "google_project_iam_member" "sa_roles" {
   ])
   role   = each.key
   member = "serviceAccount:${google_service_account.agent_sa.email}"
+  depends_on = [google_service_account.agent_sa]
 }
 
 # Create secret containers (NOT versions)
